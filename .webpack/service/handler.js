@@ -33600,20 +33600,24 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 class Controller {
     constructor() {
         this.api = express__WEBPACK_IMPORTED_MODULE_0__["Router"]();
-        this.api.get('/:v/valuation/', Controller.getValuation);
-        this.api.get('/valuation/', Controller.getValuation);
+        this.api.get('/:v/valuation/', this.getValuation);
+        this.api.get('/valuation/', this.getValuation);
     }
-    static getValuation(req, res) {
+    static getValuationService(version = null) {
+        const versionIsSupported = Controller.supportedVersions.filter(v => v === version).length > 0;
+        if (versionIsSupported) {
+            return _services__WEBPACK_IMPORTED_MODULE_1__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION, version);
+        }
+        else {
+            return _services__WEBPACK_IMPORTED_MODULE_1__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION, 'v3');
+        }
+    }
+    getValuation(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const versionIsSupported = Controller.supportedVersions.filter(v => v === req.params.v).length > 0;
             try {
-                if (req.params.v && versionIsSupported) {
-                    const service = _services__WEBPACK_IMPORTED_MODULE_1__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION, req.params.v);
-                    return res.send(service.getValuation());
-                }
-                else {
-                    return res.send('me!');
-                }
+                const service = Controller.getValuationService(req.params.v);
+                const output = yield service.getValuation();
+                return res.json(output);
             }
             catch (error) {
                 res.status(500).send(error);

@@ -9,19 +9,25 @@ export class Controller {
     public readonly api = express.Router()
     
     constructor() {
-        this.api.get('/:v/valuation/', Controller.getValuation);
-        this.api.get('/valuation/', Controller.getValuation);
+        this.api.get('/:v/valuation/', this.getValuation);
+        this.api.get('/valuation/', this.getValuation);
     }
 
-    private static async getValuation(req, res) {
-        const versionIsSupported = Controller.supportedVersions.filter(v => v === req.params.v).length > 0;
+    private static getValuationService(version: string = null) {
+        const versionIsSupported = Controller.supportedVersions.filter(v => v === version).length > 0;
+        if (versionIsSupported) {
+            return ServiceFactory.get(Services.VALUATION, version);
+        } else {
+            return ServiceFactory.get(Services.VALUATION, 'v3');
+        }
+    }
+
+    private async getValuation(req, res) {
         try {
-            if (req.params.v && versionIsSupported) {
-                const service: ValuationService = ServiceFactory.get(Services.VALUATION, req.params.v);
-                return res.send(service.getValuation());
-            } else {
-                return res.send('me!');
-            }
+            const service = Controller.getValuationService(req.params.v);
+            const output = await service.getValuation();
+
+            return res.json(output);
         } catch (error) {
             res.status(500).send(error);
         }
