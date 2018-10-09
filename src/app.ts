@@ -11,4 +11,4 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-new Controller(app);
+app.use('/', new Controller().api);

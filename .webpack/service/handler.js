@@ -33584,7 +33584,9 @@ __webpack_require__(/*! source-map-support */ "./node_modules/source-map-support
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Controller", function() { return Controller; });
-/* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services */ "./src/services/index.ts");
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! express */ "./node_modules/express/index.js");
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services */ "./src/services/index.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -33594,18 +33596,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
+
 class Controller {
-    constructor(api) {
-        this.api = api;
-        api.get('/:v/valuation/', Controller.getValuation);
-        api.get('/valuation/', Controller.getValuation);
+    constructor() {
+        this.api = express__WEBPACK_IMPORTED_MODULE_0__["Router"]();
+        this.api.get('/:v/valuation/', Controller.getValuation);
+        this.api.get('/valuation/', Controller.getValuation);
     }
     static getValuation(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const versionIsSupported = Controller.supportedVersions.filter(v => v === req.params.v).length > 0;
             try {
                 if (req.params.v && versionIsSupported) {
-                    const service = _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_0__["Services"].VALUATION, req.params.v);
+                    const service = _services__WEBPACK_IMPORTED_MODULE_1__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION, req.params.v);
                     return res.send(service.getValuation());
                 }
                 else {
@@ -33650,7 +33653,7 @@ app.use(cors__WEBPACK_IMPORTED_MODULE_3__());
 app.use(body_parser__WEBPACK_IMPORTED_MODULE_2__["urlencoded"]({ extended: false }));
 // parse application/json
 app.use(body_parser__WEBPACK_IMPORTED_MODULE_2__["json"]());
-new _api_index__WEBPACK_IMPORTED_MODULE_0__["Controller"](app);
+app.use('/', new _api_index__WEBPACK_IMPORTED_MODULE_0__["Controller"]().api);
 
 
 /***/ }),

@@ -5,13 +5,15 @@ import { Services, ServiceFactory } from '../services';
 export class Controller {
     
     private static supportedVersions = ['v1', 'v2', 'v3'];
+
+    public readonly api = express.Router()
     
-    constructor(public readonly api: express.Application | express.Router) {
-        api.get('/:v/valuation/', Controller.getValuation);
-        api.get('/valuation/', Controller.getValuation);
+    constructor() {
+        this.api.get('/:v/valuation/', Controller.getValuation);
+        this.api.get('/valuation/', Controller.getValuation);
     }
 
-    private static async getValuation(req: express.Request, res: express.Response) {
+    private static async getValuation(req, res) {
         const versionIsSupported = Controller.supportedVersions.filter(v => v === req.params.v).length > 0;
         try {
             if (req.params.v && versionIsSupported) {
