@@ -7,18 +7,18 @@ export interface IRouteParams {
     service: Services;
 }
 
-export function Route(params: IRouteParams) {
+export function Route(params: IRouteParams[]) {
 
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-    
-        function getService(version: string = null) {
+
+        function getService(param, version: string = null) {
             if (!version) {
-                return ServiceFactory.get(params.service, params.currentVersion);
+                return ServiceFactory.get(param.service, param.currentVersion);
             }
 
-            const versionIsSupported = params.versionSupported.filter(v => v === version).length > 0;
+            const versionIsSupported = param.versionSupported.filter(v => v === version).length > 0;
             if (versionIsSupported) {
-                return ServiceFactory.get(params.service, version);
+                return ServiceFactory.get(param.service, version);
             } else {
                 const err = new Error();
                 err.name = 'InvalidVersion';
@@ -27,12 +27,12 @@ export function Route(params: IRouteParams) {
             }
         }
 
-        async function extendedMethod(req, res, next) {
+        async function extendedMethod(req: express.Request, res: express.Response, next: express.NextFunction) {
             const context = this;
             
             try {
-                const service = getService();
-                const output = await originalFunc.apply(context, [service]);
+                const serviceList = params.map(v => getService(v, req.params.v));
+                const output = await originalFunc.apply(context, [ req, res, next, ...serviceList ]);
                 return res.json({ ...output });
             } catch (error) {
                 return res.status(500).send(error);

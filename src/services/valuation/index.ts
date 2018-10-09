@@ -3,7 +3,6 @@ import {ValuationService} from './v1/service';
 export class ValuationFactory {
 
     static get(version: string) {
-        console.log(version);
         switch (version) {
             case 'v1':
                 return new ValuationService();

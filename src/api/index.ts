@@ -23,13 +23,15 @@ export class Controller {
         }
     }
 
-    @Route({
-        service: Services.VALUATION,
-        versionSupported: ['v1'],
-        currentVersion: 'v1'
-    })
-    private async getValuation(service) {
-        return await service.getValuation();
+    @Route([
+        {
+            service: Services.VALUATION,
+            versionSupported: ['v1', 'v2'],
+            currentVersion: 'v1'
+        }
+    ])
+    private async getValuation(req, res, next, valuationService) {
+        return await valuationService.getValuation();
     }
 
 }

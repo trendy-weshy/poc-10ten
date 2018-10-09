@@ -33596,13 +33596,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function Route(params) {
     return function (target, propertyKey, descriptor) {
-        function getService(version = null) {
+        function getService(param, version = null) {
             if (!version) {
-                return _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(params.service, params.currentVersion);
+                return _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(param.service, param.currentVersion);
             }
-            const versionIsSupported = params.versionSupported.filter(v => v === version).length > 0;
+            const versionIsSupported = param.versionSupported.filter(v => v === version).length > 0;
             if (versionIsSupported) {
-                return _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(params.service, version);
+                return _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(param.service, version);
             }
             else {
                 const err = new Error();
@@ -33615,8 +33615,8 @@ function Route(params) {
             return __awaiter(this, void 0, void 0, function* () {
                 const context = this;
                 try {
-                    const service = getService();
-                    const output = yield originalFunc.apply(context, [service]);
+                    const serviceList = params.map(v => getService(v, req.params.v));
+                    const output = yield originalFunc.apply(context, [req, res, next, ...serviceList]);
                     return res.json(Object.assign({}, output));
                 }
                 catch (error) {
@@ -33685,21 +33685,23 @@ class Controller {
             return _services__WEBPACK_IMPORTED_MODULE_1__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION, 'v3');
         }
     }
-    getValuation(service) {
+    getValuation(req, res, next, valuationService) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield service.getValuation();
+            return yield valuationService.getValuation();
         });
     }
 }
 Controller.supportedVersions = ['v1', 'v2', 'v3'];
 __decorate([
-    Object(_decorator__WEBPACK_IMPORTED_MODULE_2__["Route"])({
-        service: _services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION,
-        versionSupported: ['v1'],
-        currentVersion: 'v1'
-    }),
+    Object(_decorator__WEBPACK_IMPORTED_MODULE_2__["Route"])([
+        {
+            service: _services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION,
+            versionSupported: ['v1', 'v2'],
+            currentVersion: 'v1'
+        }
+    ]),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], Controller.prototype, "getValuation", null);
 
@@ -33757,7 +33759,6 @@ var Services;
 })(Services || (Services = {}));
 class ServiceFactory {
     static get(service, version) {
-        console.log(service);
         switch (ServiceFactory.services[service]) {
             case 'valuation':
                 return _valuation_index__WEBPACK_IMPORTED_MODULE_0__["ValuationFactory"].get(version);
@@ -33789,7 +33790,6 @@ __webpack_require__.r(__webpack_exports__);
 
 class ValuationFactory {
     static get(version) {
-        console.log(version);
         switch (version) {
             case 'v1':
                 return new _v1_service__WEBPACK_IMPORTED_MODULE_0__["ValuationService"]();

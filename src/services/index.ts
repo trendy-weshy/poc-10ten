@@ -12,7 +12,6 @@ export class ServiceFactory {
     ];
 
     static get(service: number, version: string) {
-        console.log(service);
         switch (ServiceFactory.services[service]) {
             case 'valuation':
                 return ValuationFactory.get(version);
