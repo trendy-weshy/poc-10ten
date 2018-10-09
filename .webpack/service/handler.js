@@ -33574,6 +33574,68 @@ __webpack_require__(/*! source-map-support */ "./node_modules/source-map-support
 
 /***/ }),
 
+/***/ "./src/api/decorator.ts":
+/*!******************************!*\
+  !*** ./src/api/decorator.ts ***!
+  \******************************/
+/*! exports provided: Route */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return Route; });
+/* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services */ "./src/services/index.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+function Route(params) {
+    return function (target, propertyKey, descriptor) {
+        function getService(version = null) {
+            if (!version) {
+                return _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(params.service, params.currentVersion);
+            }
+            const versionIsSupported = params.versionSupported.filter(v => v === version).length > 0;
+            if (versionIsSupported) {
+                return _services__WEBPACK_IMPORTED_MODULE_0__["ServiceFactory"].get(params.service, version);
+            }
+            else {
+                const err = new Error();
+                err.name = 'InvalidVersion';
+                err.message = 'Version is not supported';
+                throw err;
+            }
+        }
+        function extendedMethod(req, res, next) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const context = this;
+                try {
+                    const service = getService();
+                    const output = yield originalFunc.apply(context, [service]);
+                    return res.json(Object.assign({}, output));
+                }
+                catch (error) {
+                    return res.status(500).send(error);
+                }
+            });
+        }
+        if (descriptor === undefined) {
+            descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+        }
+        const originalFunc = descriptor.value;
+        descriptor.value = extendedMethod;
+        return descriptor;
+    };
+}
+
+
+/***/ }),
+
 /***/ "./src/api/index.ts":
 /*!**************************!*\
   !*** ./src/api/index.ts ***!
@@ -33587,6 +33649,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! express */ "./node_modules/express/index.js");
 /* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services */ "./src/services/index.ts");
+/* harmony import */ var _decorator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./decorator */ "./src/api/decorator.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -33595,6 +33667,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 class Controller {
@@ -33612,20 +33685,23 @@ class Controller {
             return _services__WEBPACK_IMPORTED_MODULE_1__["ServiceFactory"].get(_services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION, 'v3');
         }
     }
-    getValuation(req, res) {
+    getValuation(service) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const service = Controller.getValuationService(req.params.v);
-                const output = yield service.getValuation();
-                return res.json(output);
-            }
-            catch (error) {
-                res.status(500).send(error);
-            }
+            return yield service.getValuation();
         });
     }
 }
 Controller.supportedVersions = ['v1', 'v2', 'v3'];
+__decorate([
+    Object(_decorator__WEBPACK_IMPORTED_MODULE_2__["Route"])({
+        service: _services__WEBPACK_IMPORTED_MODULE_1__["Services"].VALUATION,
+        versionSupported: ['v1'],
+        currentVersion: 'v1'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], Controller.prototype, "getValuation", null);
 
 
 /***/ }),

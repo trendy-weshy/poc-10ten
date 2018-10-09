@@ -1,6 +1,7 @@
 import { ValuationService } from './../services/valuation/v1/service';
 import * as express from 'express';
 import { Services, ServiceFactory } from '../services';
+import { Route } from './decorator';
 
 export class Controller {
     
@@ -22,15 +23,13 @@ export class Controller {
         }
     }
 
-    private async getValuation(req, res) {
-        try {
-            const service = Controller.getValuationService(req.params.v);
-            const output = await service.getValuation();
-
-            return res.json(output);
-        } catch (error) {
-            res.status(500).send(error);
-        }
+    @Route({
+        service: Services.VALUATION,
+        versionSupported: ['v1'],
+        currentVersion: 'v1'
+    })
+    private async getValuation(service) {
+        return await service.getValuation();
     }
 
 }
