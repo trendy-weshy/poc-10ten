@@ -1,25 +1,18 @@
 import * as express from 'express';
-import { Services, ServiceFactory } from '../services';
+import { Services } from '../services';
 import { Route } from './decorator';
+import { IAPIContext } from '../lib/response.types';
 
 export class Controller {
     
-    public endpoints;
-
-    constructor() {
-        this.endpoints = {
-            getValuation: this.getValuation
-        }
-    }
-
-    @Route([
+    @Route<{ [key: string]: string | any }>([
         {
             service: Services.VALUATION,
             versionSupported: ['v1', 'v2'],
             currentVersion: 'v1'
         }
     ])
-    private async getValuation(req, res, next, valuationService) {
+    async getValuation(ctx: IAPIContext, valuationService) {
         return await valuationService.getValuation();
     }
 
@@ -30,4 +23,5 @@ export class Controller {
  * 
  * We are using `module.exports` because `export default` way of modularization to be in sync node.js Common.js `require()`
  */
-module.exports = new Controller().endpoints;
+const ctrl = new Controller();
+exports.getValuation = ctrl.getValuation;

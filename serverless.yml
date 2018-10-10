@@ -12,5 +12,14 @@ provider:
 
 functions:
   app:
-    handler: api/endpoints.getValuation
+    handler: src/api/controller.getValuation
+    events:
+      - http:
+          path: /valuation
+          method: GET
+          cors: true
+      - http:
+          path: /{version}/valuation
+          method: GET
+          cors: true
 
