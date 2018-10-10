@@ -2,7 +2,7 @@ import {ValuationService} from './v1/service';
 
 export class ValuationFactory {
 
-    static get(version: string) {
+    static get(version: string | null | undefined) {
         switch (version) {
             case 'v1':
                 return new ValuationService();

@@ -1,11 +1,11 @@
-import { APIGatewayEvent, Context } from "aws-lambda";
+import { APIGatewayEvent, Context } from 'aws-lambda';
 
 export interface IAPIContext {
     event: APIGatewayEvent;
     context: Context;
 }
 
-export type HeaderObject = { [key: string]: string | number | boolean };
+export interface HeaderObject { [key: string]: string | number | boolean }
 
 export interface IResponseObject {
     statusCode: number;

@@ -1,5 +1,5 @@
-import { IErrorResponse, IResponseObject } from "./response.types";
-import { Callback } from "aws-lambda";
+import { IErrorResponse } from './response.types';
+import { Callback } from 'aws-lambda';
 
 export class ResponseFactory {
 
@@ -22,7 +22,7 @@ export class ResponseFactory {
         });
     }
 
-    static success(cb: Callback, body: any, statusCode = 200, customHeaders?) {
+    static success(cb: Callback, body: any, statusCode = 200, customHeaders?: any) {
         return cb(null, {
             body: JSON.stringify(body),
             headers: Object.assign({}, ResponseFactory.coreHeaders, customHeaders || null),

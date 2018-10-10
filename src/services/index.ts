@@ -11,7 +11,7 @@ export class ServiceFactory {
         'valuation'
     ];
 
-    static get(service: number, version: string) {
+    static get(service: number, version: string | null | undefined) {
         switch (ServiceFactory.services[service]) {
             case 'valuation':
                 return ValuationFactory.get(version);
@@ -19,6 +19,7 @@ export class ServiceFactory {
                 const err = new Error();
                 err.name = 'ServiceError';
                 err.message = 'Service could not be found';
+                throw err;
         }
     }
 }

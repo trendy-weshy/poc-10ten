@@ -1,10 +1,10 @@
-import * as express from 'express';
 import { Services } from '../services';
 import { Route } from './decorator';
 import { IAPIContext } from '../lib/response.types';
+import { ValuationService } from '../services/valuation/v1/service';
 
 export class Controller {
-    
+
     @Route<{ [key: string]: string | any }>([
         {
             service: Services.VALUATION,
@@ -12,7 +12,7 @@ export class Controller {
             currentVersion: 'v1'
         }
     ])
-    async getValuation(ctx: IAPIContext, valuationService) {
+    async getValuation(ctx: IAPIContext, valuationService: ValuationService) {
         return await valuationService.getValuation();
     }
 
