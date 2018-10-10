@@ -12,8 +12,5 @@ provider:
 
 functions:
   app:
-    handler: handler.app
-    events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
+    handler: api/endpoints.getValuation
 
